@@ -66,6 +66,7 @@ create_nodes () {
         # On Remote
         # Set up a Data Disk (1st data disk is always attached as /dev/sdc on Azure)
         sudo sh -c "parted -s -a optimal /dev/sdc mklabel gpt; parted -s -a optimal /dev/sdc -- mkpart primary xfs 1 -1; mkfs.xfs -f /dev/sdc1"
+        # sudo sh -c "echo \"$(sudo blkid /dev/sdc1|awk '{print $2}') /var/lib/pgsql xfs defaults 0 0\" >> /etc/fstab"
         sudo sh -c "echo \"/dev/sdc1 /var/lib/pgsql xfs defaults 0 0\" >> /etc/fstab"
         sudo sh -c "mkdir /var/lib/pgsql; mount /var/lib/pgsql"
         
