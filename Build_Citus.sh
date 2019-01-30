@@ -89,6 +89,7 @@ create_nodes () {
 
         # Restart PostgreSQL
         sudo sh -c "systemctl restart postgresql-11; systemctl enable postgresql-11"
+        sudo sh -c "firewall-cmd --permanent --zone=public --add-service=postgresql; systemctl restart firewalld"
 
         # Load Citus extension
         sudo -i -u postgres psql -c "CREATE EXTENSION citus;"
@@ -104,7 +105,7 @@ configure_coodinator () {
 
     citusPubIPAddr=$(az vm list-ip-addresses -n "${citusName}1" -o tsv --query "[].virtualMachine[].{PublicIp:network.publicIpAddresses[0].ipAddress}")
     # 1st node may have 192.168.1.4, 2nd and others will be workers and 2nd node may have 192.168.1.5
-    for last_octet in `seq 5 $(($citusNodeCount + 4))`; do
+    for last_octet in `seq 5 $(($citusNodeCount + 3))`; do
         ssh -o "StrictHostKeyChecking no" $admin@$citusPubIPAddr "sudo -i -u postgres psql -c \"SELECT * from master_add_node('192.168.1.${last_octet}', 5432);\""
     done
 }
