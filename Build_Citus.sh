@@ -9,7 +9,8 @@ readonly location="japaneast"
 readonly citusNodeSize="Standard_D16s_v3"
 # The 1st node will be setup as 'Coordinator'
 readonly citusNodeCount="9"
-readonly citusNodeOSImage="RedHat:RHEL:7.5:7.5.2018081519"
+readonly citusNodeOSImage="OpenLogic:CentOS:7.6:7.6.20190708"
+#readonly citusNodeOSImage="RedHat:RHEL:7.5:7.5.2018081519"
 readonly citusNodeOSDiskSize="256"
 readonly citusNodeDataDiskSize="4095"
 
@@ -70,6 +71,11 @@ create_nodes () {
         sudo sh -c "echo \"/dev/sdc1 /var/lib/pgsql xfs defaults 0 0\" >> /etc/fstab"
         sudo sh -c "mkdir /var/lib/pgsql; mount /var/lib/pgsql"
         
+	# Install PGroonga
+	sudo -H yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-$(rpm -qf --queryformat="%{VERSION}" /etc/redhat-release)-$(rpm -qf --queryformat="%{ARCH}" /etc/redhat-release)/pgdg-redhat-repo-latest.noarch.rpm
+	sudo -H yum install -y https://packages.groonga.org/centos/groonga-release-latest.noarch.rpm
+	sudo -H yum install -y postgresql11-pgroonga groonga-tokenizer-mecab
+
         # Install Citus
         # See https://docs.citusdata.com/en/stable/installation/multi_machine_rhel.html
         sudo sh -c "curl https://install.citusdata.com/community/rpm.sh | bash"
